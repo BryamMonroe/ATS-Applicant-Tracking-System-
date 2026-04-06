@@ -1,0 +1,44 @@
+version: '3.8'
+
+# Por que Docker Compose?
+# Em vez de instalar o MySQL na máquina, o Docker sobe um container isolado.
+# Qualquer pessoa que clonar o projeto roda `docker-compose up -d` e
+# o banco já está pronto — sem configuração manual.
+
+services:
+
+  # ── Banco de dados MySQL ──────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: ats_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: ats_db
+      MYSQL_USER: ats_user
+      MYSQL_PASSWORD: ats_pass
+    ports:
+      - "3306:3306"       # porta local:porta do container
+    volumes:
+      - mysql_data:/var/lib/mysql   # persiste os dados entre reinicializações
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+  # ── Adminer: interface web para visualizar o banco ────────────────────
+  # Acesse: http://localhost:8081
+  # Sistema: MySQL | Servidor: mysql | Usuário: ats_user | Senha: ats_pass
+  adminer:
+    image: adminer:latest
+    container_name: ats_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+    driver: local
