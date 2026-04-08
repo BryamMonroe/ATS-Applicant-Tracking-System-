@@ -16,10 +16,19 @@
 
 @layer components {
   /* Scrollbar fina e discreta — traz refinamento ao kanban */
-  ::-webkit-scrollbar        { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track  { background: transparent; }
-  ::-webkit-scrollbar-thumb  { @apply bg-stone-300 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-stone-400; }
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-stone-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-stone-400;
+  }
 
   /* Card base — usado em candidatos e colunas */
   .card {
@@ -62,8 +71,14 @@
 
   /* Animação de entrada dos cards no kanban */
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   .animate-slide-up {
     animation: slideUp 0.2s ease-out forwards;
@@ -71,8 +86,12 @@
 
   /* Overlay do modal */
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   .animate-fade-in {
     animation: fadeIn 0.15s ease-out forwards;
@@ -81,6 +100,8 @@
   /* Card dragging */
   .dragging {
     @apply opacity-50 scale-95 rotate-1;
-    transition: opacity 0.1s, transform 0.1s;
+    transition:
+      opacity 0.1s,
+      transform 0.1s;
   }
 }

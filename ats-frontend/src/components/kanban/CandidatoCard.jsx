@@ -1,17 +1,12 @@
-/**
- * CandidatoCard — card arrastável do Kanban.
- *
- * useSortable (dnd-kit) fornece:
- *   - attributes: acessibilidade (aria-*)
- *   - listeners: eventos de drag (onPointerDown etc.)
- *   - setNodeRef: ref do elemento DOM para o dnd rastrear
- *   - transform: posição calculada durante o drag
- *   - isDragging: true enquanto está sendo arrastado
- */
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { FileText, Download, Trash2, Pencil } from 'lucide-react'
-import { CONFIG_STATUS, iniciais, corAvatar, formatarData } from '../../services/pipeline'
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { FileText, Download, Trash2, Pencil } from "lucide-react";
+import {
+  CONFIG_STATUS,
+  iniciais,
+  corAvatar,
+  formatarData,
+} from "../../services/pipeline";
 
 export function CandidatoCard({ candidato, onEditar, onDeletar, onDownload }) {
   const {
@@ -21,16 +16,16 @@ export function CandidatoCard({ candidato, onEditar, onDeletar, onDownload }) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: candidato.id })
+  } = useSortable({ id: candidato.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 50 : 'auto',
-  }
+    zIndex: isDragging ? 50 : "auto",
+  };
 
-  const config = CONFIG_STATUS[candidato.status]
+  const config = CONFIG_STATUS[candidato.status];
 
   return (
     <div
@@ -45,8 +40,10 @@ export function CandidatoCard({ candidato, onEditar, onDeletar, onDownload }) {
       <div {...listeners} className="mb-2">
         {/* Avatar + nome */}
         <div className="flex items-start gap-2.5">
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center
-                          text-xs font-semibold shrink-0 ${corAvatar(candidato.nome)}`}>
+          <div
+            className={`w-8 h-8 rounded-lg flex items-center justify-center
+                          text-xs font-semibold shrink-0 ${corAvatar(candidato.nome)}`}
+          >
             {iniciais(candidato.nome)}
           </div>
           <div className="min-w-0 flex-1">
@@ -65,7 +62,7 @@ export function CandidatoCard({ candidato, onEditar, onDeletar, onDownload }) {
         <div className="flex items-center gap-1 mt-2 mb-1">
           <FileText size={11} className="text-stone-400 shrink-0" />
           <span className="text-xs text-stone-400 truncate">
-            {candidato.curriculoNomeOriginal || 'Currículo anexado'}
+            {candidato.curriculoNomeOriginal || "Currículo anexado"}
           </span>
         </div>
       )}
@@ -76,8 +73,10 @@ export function CandidatoCard({ candidato, onEditar, onDeletar, onDownload }) {
       </p>
 
       {/* Ações — aparecem no hover */}
-      <div className="flex items-center gap-1 mt-2 pt-2 border-t border-stone-100
-                      opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+      <div
+        className="flex items-center gap-1 mt-2 pt-2 border-t border-stone-100
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+      >
         <button
           onClick={() => onEditar(candidato)}
           className="btn-ghost text-xs py-1 px-2 flex-1 justify-center"
@@ -106,5 +105,5 @@ export function CandidatoCard({ candidato, onEditar, onDeletar, onDownload }) {
         </button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,21 +1,23 @@
-/**
- * ConfirmModal — diálogo de confirmação genérico.
- * Reutilizável para qualquer ação destrutiva.
- */
-import { AlertTriangle, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function ConfirmModal({ titulo, descricao, onConfirmar, onCancelar }) {
-  const [carregando, setCarregando] = useState(false)
+  const [carregando, setCarregando] = useState(false);
 
   const handleConfirmar = async () => {
-    setCarregando(true)
-    try { await onConfirmar() } finally { setCarregando(false) }
-  }
+    setCarregando(true);
+    try {
+      await onConfirmar();
+    } finally {
+      setCarregando(false);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-stone-900/40 backdrop-blur-[2px] z-50
-                    flex items-center justify-center p-4 animate-fade-in">
+    <div
+      className="fixed inset-0 bg-stone-900/40 backdrop-blur-[2px] z-50
+                    flex items-center justify-center p-4 animate-fade-in"
+    >
       <div className="card w-full max-w-sm shadow-modal p-6">
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
@@ -42,5 +44,5 @@ export function ConfirmModal({ titulo, descricao, onConfirmar, onCancelar }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

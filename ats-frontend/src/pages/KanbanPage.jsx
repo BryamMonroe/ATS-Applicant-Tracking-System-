@@ -1,106 +1,101 @@
-/**
- * KanbanPage — página principal do ATS.
- *
- * Orquestra todos os componentes: header, filtros, board e modais.
- * Delega estado e lógica para o hook useCandidatos.
- * Os modais são controlados por estado local: qual está aberto e qual
- * candidato está selecionado.
- */
-import { useState, useCallback } from 'react'
-import { Plus, RefreshCw, Loader2 } from 'lucide-react'
-import { KanbanBoard }      from '../components/kanban/KanbanBoard'
-import { CandidatoModal }   from '../components/candidato/CandidatoModal'
-import { ConfirmModal }     from '../components/ui/ConfirmModal'
-import { SearchBar }        from '../components/ui/SearchBar'
-import { Toast }            from '../components/ui/Toast'
-import { useCandidatos }    from '../hooks/useCandidatos'
-import { downloadCurriculo, extrairMensagemErro } from '../services/api'
-import { COLUNAS_PIPELINE } from '../services/pipeline'
+import { useState, useCallback } from "react";
+import { Plus, RefreshCw, Loader2 } from "lucide-react";
+import { KanbanBoard } from "../components/kanban/KanbanBoard";
+import { CandidatoModal } from "../components/candidato/CandidatoModal";
+import { ConfirmModal } from "../components/ui/ConfirmModal";
+import { SearchBar } from "../components/ui/SearchBar";
+import { Toast } from "../components/ui/Toast";
+import { useCandidatos } from "../hooks/useCandidatos";
+import { downloadCurriculo, extrairMensagemErro } from "../services/api";
+import { COLUNAS_PIPELINE } from "../services/pipeline";
 
 export function KanbanPage() {
   const {
-    candidatos, carregando, erro,
-    filtros, setFiltros, carregar,
-    mover, criar, atualizar, deletar,
-    enviarCurriculo, apagarCurriculo,
-  } = useCandidatos()
+    candidatos,
+    carregando,
+    erro,
+    filtros,
+    setFiltros,
+    carregar,
+    mover,
+    criar,
+    atualizar,
+    deletar,
+    enviarCurriculo,
+    apagarCurriculo,
+  } = useCandidatos();
 
-  // Estado dos modais
-  const [modalAberto, setModalAberto]           = useState(false)
-  const [candidatoEditando, setCandidatoEditando] = useState(null)
-  const [candidatoDeletando, setCandidatoDeletando] = useState(null)
+  const [modalAberto, setModalAberto] = useState(false);
+  const [candidatoEditando, setCandidatoEditando] = useState(null);
+  const [candidatoDeletando, setCandidatoDeletando] = useState(null);
 
-  // Toast
-  const [toast, setToast] = useState(null)
-  const mostrarToast = (mensagem, tipo = 'sucesso') => setToast({ mensagem, tipo })
-
-  // ─── Handlers ──────────────────────────────────────────────────────────
+  const [toast, setToast] = useState(null);
+  const mostrarToast = (mensagem, tipo = "sucesso") =>
+    setToast({ mensagem, tipo });
 
   const abrirCriar = () => {
-    setCandidatoEditando(null)
-    setModalAberto(true)
-  }
+    setCandidatoEditando(null);
+    setModalAberto(true);
+  };
 
   const abrirEditar = (candidato) => {
-    setCandidatoEditando(candidato)
-    setModalAberto(true)
-  }
+    setCandidatoEditando(candidato);
+    setModalAberto(true);
+  };
 
   const fecharModal = () => {
-    setModalAberto(false)
-    setCandidatoEditando(null)
-  }
+    setModalAberto(false);
+    setCandidatoEditando(null);
+  };
 
-  const handleSalvar = useCallback(async (form) => {
-    if (candidatoEditando) {
-      const atualizado = await atualizar(candidatoEditando.id, form)
-      mostrarToast('Candidato atualizado!')
-      return atualizado
-    } else {
-      const novo = await criar(form)
-      mostrarToast('Candidato cadastrado!')
-      return novo
-    }
-  }, [candidatoEditando, atualizar, criar])
+  const handleSalvar = useCallback(
+    async (form) => {
+      if (candidatoEditando) {
+        const atualizado = await atualizar(candidatoEditando.id, form);
+        mostrarToast("Candidato atualizado!");
+        return atualizado;
+      } else {
+        const novo = await criar(form);
+        mostrarToast("Candidato cadastrado!");
+        return novo;
+      }
+    },
+    [candidatoEditando, atualizar, criar],
+  );
 
   const handleDeletar = async () => {
     try {
-      await deletar(candidatoDeletando.id)
-      setCandidatoDeletando(null)
-      mostrarToast('Candidato removido.')
+      await deletar(candidatoDeletando.id);
+      setCandidatoDeletando(null);
+      mostrarToast("Candidato removido.");
     } catch (e) {
-      mostrarToast(extrairMensagemErro(e), 'erro')
+      mostrarToast(extrairMensagemErro(e), "erro");
     }
-  }
+  };
 
   const handleDownload = async (id) => {
     try {
-      await downloadCurriculo(id)
+      await downloadCurriculo(id);
     } catch (e) {
-      mostrarToast(extrairMensagemErro(e), 'erro')
+      mostrarToast(extrairMensagemErro(e), "erro");
     }
-  }
+  };
 
   const handleMover = async (id, status) => {
     try {
-      await mover(id, status)
+      await mover(id, status);
     } catch (e) {
-      mostrarToast(extrairMensagemErro(e), 'erro')
+      mostrarToast(extrairMensagemErro(e), "erro");
     }
-  }
+  };
 
-  // ─── Estatísticas do topo ────────────────────────────────────────────
-
-  const stats = COLUNAS_PIPELINE.map(c => ({
+  const stats = COLUNAS_PIPELINE.map((c) => ({
     ...c,
-    total: candidatos.filter(x => x.status === c.status).length,
-  }))
-
-  // ─── Render ────────────────────────────────────────────────────────────
+    total: candidatos.filter((x) => x.status === c.status).length,
+  }));
 
   return (
     <div className="min-h-screen flex flex-col">
-
       {/* Header */}
       <header className="bg-white border-b border-stone-100 sticky top-0 z-30">
         <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4">
@@ -125,7 +120,10 @@ export function KanbanPage() {
               title="Recarregar"
               disabled={carregando}
             >
-              <RefreshCw size={14} className={carregando ? 'animate-spin' : ''} />
+              <RefreshCw
+                size={14}
+                className={carregando ? "animate-spin" : ""}
+              />
             </button>
             <button onClick={abrirCriar} className="btn-primary h-8 text-sm">
               <Plus size={14} />
@@ -139,25 +137,34 @@ export function KanbanPage() {
       <div className="bg-white border-b border-stone-100">
         <div className="max-w-[1600px] mx-auto px-6 py-2 flex items-center gap-6 overflow-x-auto">
           <span className="text-xs text-stone-400 shrink-0">
-            {candidatos.length} candidato{candidatos.length !== 1 ? 's' : ''}
+            {candidatos.length} candidato{candidatos.length !== 1 ? "s" : ""}
           </span>
-          {stats.map(s => s.total > 0 && (
-            <div key={s.status} className="flex items-center gap-1.5 shrink-0">
-              <span className={`w-1.5 h-1.5 rounded-full ${s.corPonto}`} />
-              <span className="text-xs text-stone-500">{s.label}</span>
-              <span className={`status-badge ${s.cor} py-0`}>{s.total}</span>
-            </div>
-          ))}
+          {stats.map(
+            (s) =>
+              s.total > 0 && (
+                <div
+                  key={s.status}
+                  className="flex items-center gap-1.5 shrink-0"
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${s.corPonto}`} />
+                  <span className="text-xs text-stone-500">{s.label}</span>
+                  <span className={`status-badge ${s.cor} py-0`}>
+                    {s.total}
+                  </span>
+                </div>
+              ),
+          )}
         </div>
       </div>
 
       {/* Conteúdo principal */}
       <main className="flex-1 max-w-[1600px] mx-auto w-full px-6 py-5">
-
         {/* Estado de erro */}
         {erro && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm
-                          px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+          <div
+            className="bg-red-50 border border-red-200 text-red-600 text-sm
+                          px-4 py-3 rounded-xl mb-4 flex items-center gap-2"
+          >
             {erro}
             <button onClick={carregar} className="ml-auto text-xs underline">
               Tentar novamente
@@ -211,5 +218,5 @@ export function KanbanPage() {
         />
       )}
     </div>
-  )
+  );
 }
