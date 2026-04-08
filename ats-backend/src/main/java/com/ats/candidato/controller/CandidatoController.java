@@ -71,14 +71,6 @@ public class CandidatoController {
 
     // ─── POST ─────────────────────────────────────────────────────────────
 
-    /**
-     * @Valid → ativa as validações declaradas no CandidatoRequest
-     *          (@NotBlank, @Email etc.). Se falhar, lança
-     *          MethodArgumentNotValidException → tratada pelo GlobalExceptionHandler.
-     *
-     * @ResponseStatus(201) → retorna o header "Location" e status 201 Created.
-     * Boa prática de REST: POST de criação retorna 201, não 200.
-     */
     @Operation(summary = "Cadastra novo candidato")
     @PostMapping
     public ResponseEntity<CandidatoResponse> cadastrar(@Valid @RequestBody CandidatoRequest request) {
@@ -96,14 +88,7 @@ public class CandidatoController {
         return ResponseEntity.ok(service.atualizar(id, request));
     }
 
-    // ─── PATCH ────────────────────────────────────────────────────────────
 
-    /**
-     * PATCH em vez de PUT porque estamos atualizando apenas UM campo (status).
-     * PUT = substituição total do recurso.
-     * PATCH = atualização parcial.
-     * Esta distinção semântica é importante para uma API REST bem projetada.
-     */
     @Operation(summary = "Move candidato para outra etapa do pipeline")
     @PatchMapping("/{id}/status")
     public ResponseEntity<CandidatoResponse> atualizarStatus(
